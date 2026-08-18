@@ -1,5 +1,5 @@
 export default function decorate(block) {
- debugger; console.log('🔥 TEASER JS IS WORKING!', block);
+ console.log('🔥 TEASER JS IS WORKING!', block);
   const heading = block.querySelector('.title h1');
    if (heading) {
     heading.textContent = '🔥 TEASER JS IS WORKING!';
