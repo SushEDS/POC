@@ -1,20 +1,17 @@
-.herotextoverimage-wrapper {
-  max-width: 100%;
-  margin: 0 auto;
-}
-
+/* ब्लॉक का मुख्य कंटेनर */
 .herotextoverimage {
   position: relative;
   width: 100%;
-  min-height: 450px; /* बैनर की ऊंचाई */
+  min-height: 500px;
   display: flex;
   align-items: center;
-  justify-content: flex-end; /* टेक्स्ट को राइट साइड में रखने के लिए */
+  justify-content: flex-end; /* सारा टेक्स्ट राइट साइड में अलाइन करने के लिए */
   overflow: hidden;
-  font-family: sans-serif;
+  font-family: Arial, sans-serif;
+  box-sizing: border-box;
 }
 
-/* बैकग्राउंड इमेज सेटअप */
+/* इमेज को पूरे बैकग्राउंड में फैलाने के लिए */
 .herotextoverimage .hero-bg-image {
   position: absolute;
   top: 0;
@@ -24,83 +21,89 @@
   z-index: 1;
 }
 
+.herotextoverimage .hero-bg-image picture,
 .herotextoverimage .hero-bg-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
-/* टेक्स्ट और लिंक्स का रैपर */
+/* कंटेंट बॉक्स (राइट साइड ओवरले) */
 .herotextoverimage .hero-content-wrapper {
   position: relative;
   z-index: 2;
   width: 100%;
-  max-width: 500px; /* राइट साइड कंटेंट की चौड़ाई */
-  padding: 40px;
-  margin-right: 5%;
-  color: #ffffff; /* सफ़ेद टेक्स्ट */
-  background: rgba(0, 0, 0, 0.2); /* इमेज के ऊपर टेक्स्ट साफ़ दिखने के लिए हल्का ब्लैक शेड */
-  backdrop-filter: blur(2px);
-  border-radius: 8px;
+  max-width: 550px;
+  padding: 50px;
+  margin-right: 8%; /* स्क्रीन के दाहिने हिस्से से दूरी */
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.25); /* इमेज धुंधली न हो इसलिए हल्का पारदर्शी शेड */
+  backdrop-filter: blur(4px); /* प्रीमियम लुक के लिए ग्लास इफेक्ट */
+  border-radius: 4px;
+  box-sizing: border-box;
 }
 
 /* बैकलिंक स्टाइल (ऊपर वाला लिंक) */
 .herotextoverimage .hero-backlink a {
-  color: #ffffff;
+  color: #ffffff !important;
   text-decoration: none;
-  font-size: 14px;
+  font-size: 15px;
   display: inline-flex;
   align-items: center;
-  margin-bottom: 20px;
-  opacity: 0.8;
+  margin-bottom: 25px;
+  opacity: 0.85;
 }
 
 .herotextoverimage .hero-backlink a:hover {
   opacity: 1;
+  text-decoration: underline;
 }
 
-/* मुख्य हीरो टेक्स्ट (Lorem Ipsum) */
-.herotextoverimage .hero-main-text h1,
-.herotextoverimage .hero-main-text p {
-  color: #ffffff;
-  margin: 0 0 15px 0;
-}
-
+/* मुख्य टेक्स्ट (Lorem Ipsum) और नीचे की ऑरेंज लाइन */
 .herotextoverimage .hero-main-text {
-  font-size: 32px;
-  line-height: 1.3;
-  font-weight: bold;
-  border-bottom: 3px solid #ff6b00; /* स्क्रीनशॉट जैसी ऑरेंज लाइन */
-  padding-bottom: 15px;
-  margin-bottom: 20px;
+  font-size: 34px;
+  line-height: 1.25;
+  font-weight: 700;
+  color: #ffffff;
+  border-bottom: 3px solid #ff6b00; /* हुक जैसी ऑरेंज लाइन */
+  padding-bottom: 20px;
+  margin-bottom: 25px;
+}
+
+.herotextoverimage .hero-main-text p,
+.herotextoverimage .hero-main-text h1,
+.herotextoverimage .hero-main-text h2 {
+  color: #ffffff !important;
+  margin: 0;
 }
 
 /* प्राइम लिंक स्टाइल (नीचे वाला लिंक) */
 .herotextoverimage .hero-prime-link a {
-  color: #ffffff;
+  color: #ffffff !important;
   text-decoration: none;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: bold;
   display: inline-flex;
   align-items: center;
-  transition: transform 0.2s ease;
 }
 
 .herotextoverimage .hero-prime-link a:hover {
-  transform: translateX(5px); /* होवर करने पर लिंक थोड़ा आगे खिसकेगा */
+  text-decoration: underline;
 }
 
-/* रिस्पॉन्सिव डिज़ाइन (मोबाइल स्क्रीन के लिए) */
+/* मोबाइल रिस्पॉन्सिव */
 @media (max-width: 768px) {
   .herotextoverimage {
-    flex-direction: column;
-    justify-content: flex-end;
-    min-height: 500px;
+    justify-content: center;
+    align-items: flex-end;
+    min-height: 450px;
   }
-  
+
   .herotextoverimage .hero-content-wrapper {
     max-width: 100%;
     margin-right: 0;
-    background: rgba(0, 0, 0, 0.6); /* मोबाइल पर बैकग्राउंड ज़्यादा डार्क ताकि टेक्स्ट साफ़ दिखे */
+    padding: 30px 20px;
+    background: rgba(0, 0, 0, 0.65); /* मोबाइल पर विजिबिलिटी के लिए डार्क बैकग्राउंड */
   }
 }
