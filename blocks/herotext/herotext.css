@@ -47,6 +47,7 @@
   margin-bottom: 20px;
 }
 
+
 .herotext .hero-backlink a {
   color: #ffffff !important;
   text-decoration: none;
@@ -54,13 +55,20 @@
   font-weight: 500;
   display: inline-flex;
   align-items: center;
+  gap: 8px; /* टेक्स्ट और तीर के बीच की दूरी */
   opacity: 0.85;
 }
 
-.herotext .hero-backlink a:hover {
-  opacity: 1;
-  text-decoration: underline;
+/* टेक्स्ट से पहले बायाँ तीर (←) जोड़ने के लिए */
+.herotext .hero-backlink a::before {
+  content: "\2190"; /* Unicode Code for Left Arrow */
+  font-size: 18px;
+  line-height: 1;
 }
+
+
+
+
 
 
 .herotext .hero-main-text {
@@ -95,12 +103,21 @@
   font-weight: 600;
   display: inline-flex;
   align-items: center;
+  gap: 8px; /* टेक्स्ट और तीर के बीच की दूरी */
 }
 
-.herotext .hero-prime-link a:hover {
-  text-decoration: underline;
+/* टेक्स्ट के बाद दायाँ तीर (→) जोड़ने के लिए */
+.herotext .hero-prime-link a::after {
+  content: "\2192"; /* Unicode Code for Right Arrow */
+  font-size: 18px;
+  line-height: 1;
+  transition: transform 0.2s ease; /* होवर इफ़ेक्ट के लिए स्मूथ ट्रांजिशन */
 }
 
+/* होवर करने पर प्राइम लिंक का तीर थोड़ा आगे खिसकेगा */
+.herotext .hero-prime-link a:hover::after {
+  transform: translateX(4px);
+}
 
 @media (max-width: 768px) {
   .herotext {
