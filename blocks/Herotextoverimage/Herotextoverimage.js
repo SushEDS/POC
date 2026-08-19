@@ -1,66 +1,45 @@
 export default function decorate(block) {
+  // टेबल के सभी रोज़ (rows) को ढूँढें
   const rows = [...block.children];
-
-
-  const heroWrapper = document.createElement('div');
-  heroWrapper.classList.add('hero-wrapper');
-
   
-  const mediaContainer = document.createElement('div');
-  mediaContainer.classList.add('hero-media');
-
-  const contentContainer = document.createElement('div');
-  contentContainer.classList.add('hero-content');
-
- 
-  if (rows[0]) {
-    const firstRowCols = [...rows[0].children];
-    
-   
-    const img = firstRowCols[0]?.querySelector('img');
-    if (img) mediaContainer.append(img);
-
-    
-    const backLink = firstRowCols[1]?.querySelector('a');
-    if (backLink) {
-      backLink.classList.add('back-link');
-      contentContainer.append(backLink);
-    }
-  }
-
- 
-  if (rows[1]) {
-    const headingText = rows[1].children[1]?.textContent.trim();
-    if (headingText) {
-      const h2 = document.createElement('h2');
-      h2.classList.add('main-title');
-      h2.textContent = headingText;
-      contentContainer.append(h2);
-    }
-  }
-
-  if (rows[2]) {
-    const descText = rows[2].children[1]?.textContent.trim();
-    if (descText) {
-      const p = document.createElement('p');
-      p.classList.add('sub-title');
-      p.textContent = descText;
-      contentContainer.append(p);
-    }
-  }
-
+  // पहली रो में इमेज और बैकलिंक है
+  const firstRow = rows[0];
+  const imageContainer = firstRow.children[0];
+  const backlinkContainer = firstRow.children[1];
   
-  if (rows[3]) {
-    const primeLink = rows[3].children[1]?.querySelector('a');
-    if (primeLink) {
-      primeLink.classList.add('prime-link');
-      contentContainer.append(primeLink);
-    }
+  // बाकी रोज़ से टेक्स्ट और प्राइम लिंक निकालें
+  const textContainer = rows[1]?.children[0];
+  const primeLinkContainer = rows[3]?.children[0];
+
+  // नया रैपर (Wrapper) स्ट्रक्चर तैयार करें
+  const contentWrapper = document.createElement('div');
+  contentWrapper.classList.add('hero-content-wrapper');
+
+  // बैकलिंक को सेटअप करें
+  if (backlinkContainer && backlinkContainer.textContent.trim()) {
+    backlinkContainer.classList.add('hero-backlink');
+    contentWrapper.appendChild(backlinkContainer);
   }
 
-  
+  // मुख्य हीरो टेक्स्ट (Lorem Ipsum) को सेटअप करें
+  if (textContainer && textContainer.textContent.trim()) {
+    textContainer.classList.add('hero-main-text');
+    contentWrapper.appendChild(textContainer);
+  }
+
+  // प्राइम लिंक (बटन/अंडरलाइन लिंक) को सेटअप करें
+  if (primeLinkContainer && primeLinkContainer.textContent.trim()) {
+    primeLinkContainer.classList.add('hero-prime-link');
+    contentWrapper.appendChild(primeLinkContainer);
+  }
+
+  // ब्लॉक को साफ़ करके नया स्ट्रक्चर रेंडर करें
   block.textContent = '';
-  heroWrapper.append(mediaContainer);
-  heroWrapper.append(contentContainer);
-  block.append(heroWrapper);
+  
+  if (imageContainer) {
+    imageContainer.classList.add('hero-bg-image');
+    block.appendChild(imageContainer);
+  }
+  
+  block.appendChild(contentWrapper);
 }
