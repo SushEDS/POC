@@ -1,4 +1,74 @@
-/* Backlink Style with Arrow Icon */
+/* मुख्य ब्लॉक कंटेनर */
+.herotextoverimage {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  font-family: sans-serif;
+}
+
+.herotextoverimage .hero-wrapper {
+  display: block;
+  position: relative;
+  min-height: 500px; /* बैनर की ऊंचाई */
+  width: 100%;
+}
+
+/* इमेज कॉलम - पूरे बैकग्राउंड में फैलेगा */
+.herotextoverimage .hero-media {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.herotextoverimage .hero-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* प्ले बटन ओवरले (स्क्रीनशॉट के अनुसार इमेज के ऊपर दिखाने के लिए) */
+.herotextoverimage .hero-media::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 28%; /* स्क्रीनशॉट के अनुसार प्ले बटन की पोजीशन */
+  transform: translate(-50%, -50%);
+  width: 65px;
+  height: 65px;
+  background: rgba(21, 51, 107, 0.9); /* डार्क ब्लू सर्कल */
+  border-radius: 50%;
+  border: 3px solid #ffffff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://w3.org' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M8 5v14l11-7z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 32px;
+  cursor: pointer;
+  z-index: 2;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+/* टेक्स्ट कंटेंट एरिया - इमेज के ऊपर राइट साइड में सेट होगा */
+.herotextoverimage .hero-content {
+  position: relative;
+  z-index: 3;
+  max-width: 520px;
+  margin-left: auto; /* कंटेंट को राइट अलाइन करने के लिए */
+  margin-right: 6%;
+  padding-top: 80px;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+}
+
+/* बैकलिंक (Backlink) स्टाइल */
 .herotextoverimage .back-link {
   color: #ffffff;
   text-decoration: none;
@@ -6,22 +76,28 @@
   margin-bottom: 25px;
   display: inline-flex;
   align-items: center;
-  gap: 8px; /* Space between arrow and text */
 }
 
-/* Left Arrow Icon using inline SVG */
-.herotextoverimage .back-link::before {
-  content: '';
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://w3.org' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
+/* मुख्य बड़ा टाइटल (Hero text) */
+.herotextoverimage .main-title {
+  font-size: 2.8rem;
+  font-weight: bold;
+  line-height: 1.2;
+  margin: 0 0 20px 0;
+  color: #ffffff;
 }
 
-/* Prime Link Style with Right Arrow Icon */
+/* छोटा डिस्क्रिप्शन (Sub title) */
+.herotextoverimage .sub-title {
+  font-size: 1.15rem;
+  line-height: 1.5;
+  margin: 0 0 30px 0;
+  opacity: 0.95;
+  border-top: 2px solid #ff6b35; /* टेक्स्ट के ऊपर की छोटी लाइन */
+  padding-top: 15px;
+}
+
+/* प्राइम लिंक (Prime Link) स्टाइल */
 .herotextoverimage .prime-link {
   color: #ffffff;
   text-decoration: none;
@@ -29,30 +105,41 @@
   font-size: 1.15rem;
   display: inline-flex;
   align-items: center;
-  gap: 8px; /* Space between text and arrow */
   width: max-content;
   border-bottom: 2px solid transparent;
   transition: border-color 0.2s ease;
 }
 
-/* Right Arrow Icon using inline SVG */
-.herotextoverimage .prime-link::after {
-  content: '';
-  display: inline-block;
-  width: 18px;
-  height: 18px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://w3.org' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-  transition: transform 0.2s ease;
-}
-
-/* Hover effect: Move the right arrow slightly forward */
 .herotextoverimage .prime-link:hover {
   border-color: #ffffff;
 }
 
-.herotextoverimage .prime-link:hover::after {
-  transform: translateX(4px);
+/* मोबाइल रिस्पॉन्सिव लेआउट */
+@media (max-width: 768px) {
+  .herotextoverimage .hero-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: auto;
+  }
+  
+  .herotextoverimage .hero-media {
+    position: relative;
+    height: 260px;
+  }
+  
+  .herotextoverimage .hero-media::after {
+    left: 50%; /* मोबाइल पर प्ले बटन बीच में आ जाएगा */
+  }
+
+  .herotextoverimage .hero-content {
+    position: relative;
+    background: #0c1a30; /* मोबाइल पर पठनीयता के लिए डार्क बैकग्राउंड */
+    margin: 0;
+    max-width: 100%;
+    padding: 30px 20px;
+  }
+
+  .herotextoverimage .main-title {
+    font-size: 1.85rem;
+  }
 }
