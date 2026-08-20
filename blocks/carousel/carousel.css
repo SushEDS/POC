@@ -1,4 +1,7 @@
-/* Container block setup */
+/* --------------------------------
+   Carousel Container
+-------------------------------- */
+
 .carousel {
   position: relative;
   width: 100%;
@@ -10,87 +13,235 @@
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
 
-/* Individual slides positioning and transitions */
-.carousel .slide {
-  position: absolute;
-  top: 0;
-  left: 0;
+/* --------------------------------
+   Slick Slides Container
+-------------------------------- */
+
+.carousel .carousel-slides {
   width: 100%;
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: center;
-  transition: transform 0.5s ease-in-out;
 }
 
-/* Background image handling for slides */
+/* --------------------------------
+   Individual Slide
+-------------------------------- */
+
+.carousel .slide {
+  position: relative;
+  width: 100%;
+  height: 450px;
+  overflow: hidden;
+}
+
+/* --------------------------------
+   Slide Image
+-------------------------------- */
+
 .carousel .slide img {
   position: absolute;
   top: 0;
   left: 0;
+
   width: 100%;
   height: 100%;
+
   object-fit: cover;
+
   z-index: 1;
 }
 
-/* Text overlay layout */
+/* --------------------------------
+   Slide Text
+-------------------------------- */
+
 .carousel .slide .slide-text {
-  position: relative;
+  position: absolute;
+
+  left: 50%;
+  bottom: 40px;
+
+  transform: translateX(-50%);
+
+  width: 80%;
+
   z-index: 2;
+
   color: #ffffff;
+
   text-align: center;
-  margin-bottom: 40px;
+
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+
   font-family: sans-serif;
 }
 
+/* --------------------------------
+   Heading
+-------------------------------- */
+
 .carousel .slide .slide-text h2 {
+  margin: 0 0 10px;
+
   font-size: 3rem;
-  margin: 0 0 10px 0;
+
   font-weight: 700;
 }
 
+/* --------------------------------
+   Paragraph
+-------------------------------- */
+
 .carousel .slide .slide-text p {
-  font-size: 1.25rem;
   margin: 0;
+
+  font-size: 1.25rem;
+
   opacity: 0.9;
 }
 
-/* Global button navigation rules */
-.carousel .btn {
+/* --------------------------------
+   Slick Container
+-------------------------------- */
+
+.carousel .slick-list {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.carousel .slick-track {
+  height: 100%;
+}
+
+.carousel .slick-slide {
+  height: 450px;
+}
+
+.carousel .slick-slide > div {
+  height: 100%;
+}
+
+/* --------------------------------
+   Navigation Buttons
+-------------------------------- */
+
+.carousel .carousel-btn {
   position: absolute;
+
   top: 50%;
+
   transform: translateY(-50%);
+
   z-index: 10;
+
   width: 45px;
   height: 45px;
-  border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.9);
-  color: #333333;
+
   border: none;
-  font-size: 1.2rem;
+
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.9);
+
+  color: #333333;
+
+  font-size: 18px;
+
   font-weight: bold;
+
   cursor: pointer;
+
   display: flex;
+
   align-items: center;
   justify-content: center;
+
+  padding: 0;
+
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transition: background-color 0.2s ease, transform 0.2s ease;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
 }
 
-/* Hover state for buttons */
-.carousel .btn:hover {
-  background-color: #ffffff;
-  transform: translateY(-50%) scale(1.05);
-}
+/* --------------------------------
+   Previous Button
+-------------------------------- */
 
-/* Positioning left vs right buttons */
-.carousel .btn-prev {
+.carousel .carousel-prev {
   left: 20px;
 }
 
-.carousel .btn-next {
+/* --------------------------------
+   Next Button
+-------------------------------- */
+
+.carousel .carousel-next {
   right: 20px;
+}
+
+/* --------------------------------
+   Button Hover
+-------------------------------- */
+
+.carousel .carousel-btn:hover {
+  background: #ffffff;
+
+  transform: translateY(-50%) scale(1.05);
+}
+
+/* --------------------------------
+   Button Focus
+-------------------------------- */
+
+.carousel .carousel-btn:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: 3px;
+}
+
+/* --------------------------------
+   Mobile
+-------------------------------- */
+
+@media (max-width: 768px) {
+  .carousel {
+    height: 350px;
+  }
+
+  .carousel .slide {
+    height: 350px;
+  }
+
+  .carousel .slick-slide {
+    height: 350px;
+  }
+
+  .carousel .slide .slide-text {
+    width: 85%;
+    bottom: 25px;
+  }
+
+  .carousel .slide .slide-text h2 {
+    font-size: 2rem;
+  }
+
+  .carousel .slide .slide-text p {
+    font-size: 1rem;
+  }
+
+  .carousel .carousel-btn {
+    width: 38px;
+    height: 38px;
+
+    font-size: 16px;
+  }
+
+  .carousel .carousel-prev {
+    left: 10px;
+  }
+
+  .carousel .carousel-next {
+    right: 10px;
+  }
 }
