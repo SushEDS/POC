@@ -6,7 +6,6 @@ const SLICK_JS_URL =
 
 function loadExternalScript(src) {
   return new Promise((resolve, reject) => {
-    // If script is already loaded
     const existingScript = document.querySelector(
       `script[src="${src}"]`,
     );
@@ -64,48 +63,26 @@ function loadSlickCSS() {
 }
 
 export default async function decorate(block) {
-  /*
-   * ----------------------------------------
-   * Get all rows created by EDS
-   * ----------------------------------------
-   */
-
   const rows = [...block.children];
 
   /*
-   * ----------------------------------------
-   * Remove empty rows
-   * ----------------------------------------
+   * Create slider container
    */
-
-  const slideRows = rows.filter((row) => {
-    return row.textContent.trim() || row.querySelector('img');
-  });
-
-  /*
-   * ----------------------------------------
-   * Create slide wrapper
-   * ----------------------------------------
-   */
-
   const slider = document.createElement('div');
 
   slider.className = 'carousel-slider';
 
   /*
-   * ----------------------------------------
-   * Convert each EDS row into a slide
-   * ----------------------------------------
+   * Convert EDS rows into slides
    */
-
-  slideRows.forEach((row) => {
+  rows.forEach((row) => {
     row.classList.add('carousel-slide');
 
-    /*
-     * Second column contains text
-     */
     const columns = [...row.children];
 
+    /*
+     * Second column = text content
+     */
     if (columns[1]) {
       columns[1].classList.add('carousel-slide-text');
     }
@@ -114,44 +91,42 @@ export default async function decorate(block) {
   });
 
   /*
-   * ----------------------------------------
    * Clear original block
-   * ----------------------------------------
    */
-
   block.innerHTML = '';
 
   /*
-   * ----------------------------------------
-   * Add slider to block
-   * ----------------------------------------
+   * Add slider
    */
-
   block.appendChild(slider);
 
   /*
-   * ----------------------------------------
-   * Load jQuery + Slick
-   * ----------------------------------------
+   * Load jQuery
    */
-
   try {
     await loadExternalScript(JQUERY_URL);
 
+    /*
+     * Load Slick
+     */
     await loadExternalScript(SLICK_JS_URL);
 
+    /*
+     * Load Slick CSS
+     */
     await loadSlickCSS();
   } catch (error) {
-    console.error('Carousel dependency loading failed:', error);
+    console.error(
+      'Carousel dependency loading failed:',
+      error,
+    );
+
     return;
   }
 
   /*
-   * ----------------------------------------
-   * Check Slick
-   * ----------------------------------------
+   * Verify Slick
    */
-
   if (!window.jQuery || !window.jQuery.fn.slick) {
     console.error('Slick.js was not loaded correctly.');
     return;
@@ -160,74 +135,76 @@ export default async function decorate(block) {
   const $ = window.jQuery;
 
   /*
-   * ----------------------------------------
    * Initialize Slick
-   * ----------------------------------------
    */
-
   $(slider).slick({
-    /*
-     * One hero slide at a time
-     */
     slidesToShow: 1,
     slidesToScroll: 1,
 
     /*
-     * Infinite looping
+     * Infinite loop
      */
     infinite: true,
 
     /*
-     * Automatic sliding
+     * ============================
+     * AUTOPLAY
+     * ============================
      */
     autoplay: true,
 
     /*
-     * 5 seconds between slides
+     * Change slide every 4 seconds
      */
-    autoplaySpeed: 5000,
+    autoplaySpeed: 4000,
 
     /*
-     * Smooth animation
+     * Animation speed
      */
     speed: 700,
 
     /*
-     * Show arrows
-     */
-    arrows: true,
-
-    /*
-     * Show bottom dots
-     */
-    dots: true,
-
-    /*
-     * Fade transition
+     * Fade effect
      */
     fade: true,
 
     /*
-     * Pause when mouse is over carousel
+     * Arrows
      */
-    pauseOnHover: true,
+    arrows: true,
 
     /*
-     * Pause when user focuses carousel
+     * Dots
      */
-    pauseOnFocus: true,
+    dots: true,
+
+    /*
+     * IMPORTANT:
+     * Don't pause autoplay on hover
+     */
+    pauseOnHover: false,
+
+    /*
+     * IMPORTANT:
+     * Don't pause autoplay when
+     * arrow/dot gets focus
+     */
+    pauseOnFocus: false,
+
+    /*
+     * Don't pause when user interacts
+     */
+    pauseOnDotsHover: false,
 
     /*
      * Accessibility
      */
     accessibility: true,
 
-    /*
-     * Mobile
-     */
     responsive: [
       {
         breakpoint: 768,
+
         settings: {
           slidesToShow: 1,
           slidesToScroll: 1,
@@ -237,4 +214,13 @@ export default async function decorate(block) {
       },
     ],
   });
+
+  /*
+   * ====================================
+   * FORCE AUTOPLAY TO START
+   * ====================================
+   *
+   * This is the important addition.
+   */
+  $(slider).slick('slickPlay');
 }
