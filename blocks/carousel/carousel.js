@@ -1,140 +1,238 @@
 import { loadScript } from '../../scripts/aem.js';
 
-let slickPromise;
+const JQUERY_URL = 'https://code.jquery.com/jquery-3.7.1.min.js';
+const SLICK_JS_URL =
+  'https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js';
 
-function loadSlick() {
-  if (slickPromise) return slickPromise;
+function loadExternalScript(src) {
+  return new Promise((resolve, reject) => {
+    // If script is already loaded
+    const existingScript = document.querySelector(
+      `script[src="${src}"]`,
+    );
 
-  slickPromise = new Promise((resolve, reject) => {
-    // Load jQuery first
-    const jqueryScript = document.createElement('script');
-    jqueryScript.src = 'https://code.jquery.com/jquery-3.7.1.min.js';
-    jqueryScript.onload = () => {
-      // Load Slick after jQuery
-      const slickScript = document.createElement('script');
-      slickScript.src = 'https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js';
-      slickScript.onload = resolve;
-      slickScript.onerror = reject;
+    if (existingScript) {
+      if (src.includes('jquery') && window.jQuery) {
+        resolve();
+        return;
+      }
 
-      document.head.appendChild(slickScript);
-    };
+      if (src.includes('slick') && window.jQuery?.fn?.slick) {
+        resolve();
+        return;
+      }
 
-    jqueryScript.onerror = reject;
-    document.head.appendChild(jqueryScript);
+      existingScript.addEventListener('load', resolve);
+      existingScript.addEventListener('error', reject);
+      return;
+    }
+
+    const script = document.createElement('script');
+
+    script.src = src;
+    script.async = false;
+
+    script.onload = resolve;
+    script.onerror = reject;
+
+    document.head.appendChild(script);
   });
+}
 
-  return slickPromise;
+function loadSlickCSS() {
+  return new Promise((resolve) => {
+    const existing = document.querySelector(
+      'link[href*="slick-carousel"]',
+    );
+
+    if (existing) {
+      resolve();
+      return;
+    }
+
+    const link = document.createElement('link');
+
+    link.rel = 'stylesheet';
+    link.href =
+      'https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css';
+
+    link.onload = resolve;
+    link.onerror = resolve;
+
+    document.head.appendChild(link);
+  });
 }
 
 export default async function decorate(block) {
+  /*
+   * ----------------------------------------
+   * Get all rows created by EDS
+   * ----------------------------------------
+   */
+
   const rows = [...block.children];
 
-  // First row = Next button
-  const nextRow = rows[0];
+  /*
+   * ----------------------------------------
+   * Remove empty rows
+   * ----------------------------------------
+   */
 
-  // Last row = Previous button
-  const prevRow = rows[rows.length - 1];
-
-  // All rows between first and last = slides
-  const slideRows = rows.slice(1, -1);
-
-  // -----------------------------
-  // Create Next button
-  // -----------------------------
-
-  const nextButton = document.createElement('button');
-
-  nextButton.type = 'button';
-  nextButton.className = 'carousel-btn carousel-next';
-  nextButton.setAttribute('aria-label', 'Next slide');
-  nextButton.textContent = nextRow.textContent.trim();
-
-  // -----------------------------
-  // Create Previous button
-  // -----------------------------
-
-  const prevButton = document.createElement('button');
-
-  prevButton.type = 'button';
-  prevButton.className = 'carousel-btn carousel-prev';
-  prevButton.setAttribute('aria-label', 'Previous slide');
-  prevButton.textContent = prevRow.textContent.trim();
-
-  // -----------------------------
-  // Create Slick slides container
-  // -----------------------------
-
-  const slidesContainer = document.createElement('div');
-
-  slidesContainer.className = 'carousel-slides';
-
-  slideRows.forEach((row) => {
-    row.classList.add('slide');
-
-    // Second column = slide text
-    [...row.children].forEach((col, index) => {
-      if (index === 1) {
-        col.classList.add('slide-text');
-      }
-    });
-
-    slidesContainer.append(row);
+  const slideRows = rows.filter((row) => {
+    return row.textContent.trim() || row.querySelector('img');
   });
 
-  // Clear original block
+  /*
+   * ----------------------------------------
+   * Create slide wrapper
+   * ----------------------------------------
+   */
+
+  const slider = document.createElement('div');
+
+  slider.className = 'carousel-slider';
+
+  /*
+   * ----------------------------------------
+   * Convert each EDS row into a slide
+   * ----------------------------------------
+   */
+
+  slideRows.forEach((row) => {
+    row.classList.add('carousel-slide');
+
+    /*
+     * Second column contains text
+     */
+    const columns = [...row.children];
+
+    if (columns[1]) {
+      columns[1].classList.add('carousel-slide-text');
+    }
+
+    slider.appendChild(row);
+  });
+
+  /*
+   * ----------------------------------------
+   * Clear original block
+   * ----------------------------------------
+   */
+
   block.innerHTML = '';
 
-  // Add elements back
-  block.append(
-    slidesContainer,
-    prevButton,
-    nextButton,
-  );
+  /*
+   * ----------------------------------------
+   * Add slider to block
+   * ----------------------------------------
+   */
 
-  // -----------------------------
-  // Load Slick
-  // -----------------------------
+  block.appendChild(slider);
+
+  /*
+   * ----------------------------------------
+   * Load jQuery + Slick
+   * ----------------------------------------
+   */
 
   try {
-    await loadSlick();
+    await loadExternalScript(JQUERY_URL);
+
+    await loadExternalScript(SLICK_JS_URL);
+
+    await loadSlickCSS();
   } catch (error) {
-    console.error('Failed to load Slick Carousel:', error);
+    console.error('Carousel dependency loading failed:', error);
     return;
   }
 
-  // -----------------------------
-  // Initialize Slick
-  // -----------------------------
+  /*
+   * ----------------------------------------
+   * Check Slick
+   * ----------------------------------------
+   */
+
+  if (!window.jQuery || !window.jQuery.fn.slick) {
+    console.error('Slick.js was not loaded correctly.');
+    return;
+  }
 
   const $ = window.jQuery;
 
-  $(slidesContainer).slick({
+  /*
+   * ----------------------------------------
+   * Initialize Slick
+   * ----------------------------------------
+   */
+
+  $(slider).slick({
+    /*
+     * One hero slide at a time
+     */
     slidesToShow: 1,
     slidesToScroll: 1,
 
+    /*
+     * Infinite looping
+     */
     infinite: true,
 
+    /*
+     * Automatic sliding
+     */
+    autoplay: true,
+
+    /*
+     * 5 seconds between slides
+     */
+    autoplaySpeed: 5000,
+
+    /*
+     * Smooth animation
+     */
+    speed: 700,
+
+    /*
+     * Show arrows
+     */
     arrows: true,
 
-    prevArrow: prevButton,
-    nextArrow: nextButton,
+    /*
+     * Show bottom dots
+     */
+    dots: true,
 
-    dots: false,
+    /*
+     * Fade transition
+     */
+    fade: true,
 
-    adaptiveHeight: false,
+    /*
+     * Pause when mouse is over carousel
+     */
+    pauseOnHover: true,
 
-    speed: 500,
+    /*
+     * Pause when user focuses carousel
+     */
+    pauseOnFocus: true,
 
-    cssEase: 'ease-in-out',
-
+    /*
+     * Accessibility
+     */
     accessibility: true,
 
+    /*
+     * Mobile
+     */
     responsive: [
       {
         breakpoint: 768,
         settings: {
           slidesToShow: 1,
           slidesToScroll: 1,
+          arrows: true,
+          dots: true,
         },
       },
     ],
