@@ -1,74 +1,142 @@
-export default function decorate(block) {
+import { loadScript } from '../../scripts/aem.js';
+
+let slickPromise;
+
+function loadSlick() {
+  if (slickPromise) return slickPromise;
+
+  slickPromise = new Promise((resolve, reject) => {
+    // Load jQuery first
+    const jqueryScript = document.createElement('script');
+    jqueryScript.src = 'https://code.jquery.com/jquery-3.7.1.min.js';
+    jqueryScript.onload = () => {
+      // Load Slick after jQuery
+      const slickScript = document.createElement('script');
+      slickScript.src = 'https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js';
+      slickScript.onload = resolve;
+      slickScript.onerror = reject;
+
+      document.head.appendChild(slickScript);
+    };
+
+    jqueryScript.onerror = reject;
+    document.head.appendChild(jqueryScript);
+  });
+
+  return slickPromise;
+}
+
+export default async function decorate(block) {
   const rows = [...block.children];
-  
-  rows.forEach((row, r) => {
-    if (r === 0) {
-      // Create Next Button from the first row's content
-      const nextbtn = document.createElement('button');
-      nextbtn.classList.add('btn', 'btn-next');
-      const node = document.createTextNode(row.textContent.trim());
-      nextbtn.append(node);
-      row.replaceWith(nextbtn);
-    } else if (r === rows.length - 1) {
-      // Create Prev Button from the last row's content
-      const prebtn = document.createElement('button');
-      prebtn.classList.add('btn', 'btn-prev');
-      const node = document.createTextNode(row.textContent.trim());
-      prebtn.append(node);
-      row.replaceWith(prebtn);
-    } else {
-      // Setup individual slides
-      row.classList.add('slide');
-      [...row.children].forEach((col, c) => {
-        if (c === 1) {
-          col.classList.add('slide-text');
-        }
-      });
-    }
+
+  // First row = Next button
+  const nextRow = rows[0];
+
+  // Last row = Previous button
+  const prevRow = rows[rows.length - 1];
+
+  // All rows between first and last = slides
+  const slideRows = rows.slice(1, -1);
+
+  // -----------------------------
+  // Create Next button
+  // -----------------------------
+
+  const nextButton = document.createElement('button');
+
+  nextButton.type = 'button';
+  nextButton.className = 'carousel-btn carousel-next';
+  nextButton.setAttribute('aria-label', 'Next slide');
+  nextButton.textContent = nextRow.textContent.trim();
+
+  // -----------------------------
+  // Create Previous button
+  // -----------------------------
+
+  const prevButton = document.createElement('button');
+
+  prevButton.type = 'button';
+  prevButton.className = 'carousel-btn carousel-prev';
+  prevButton.setAttribute('aria-label', 'Previous slide');
+  prevButton.textContent = prevRow.textContent.trim();
+
+  // -----------------------------
+  // Create Slick slides container
+  // -----------------------------
+
+  const slidesContainer = document.createElement('div');
+
+  slidesContainer.className = 'carousel-slides';
+
+  slideRows.forEach((row) => {
+    row.classList.add('slide');
+
+    // Second column = slide text
+    [...row.children].forEach((col, index) => {
+      if (index === 1) {
+        col.classList.add('slide-text');
+      }
+    });
+
+    slidesContainer.append(row);
   });
 
-  // Query scoped inside the block to avoid breaking other carousels on the page
-  const slides = block.querySelectorAll(".slide");
-  const nextSlide = block.querySelector(".btn-next");
-  const prevSlide = block.querySelector(".btn-prev");
+  // Clear original block
+  block.innerHTML = '';
 
-  // Loop through slides and set initial translateX positioning
-  slides.forEach((slide, indx) => {
-    slide.style.transform = `translateX(${indx * 100}%)`;
+  // Add elements back
+  block.append(
+    slidesContainer,
+    prevButton,
+    nextButton,
+  );
+
+  // -----------------------------
+  // Load Slick
+  // -----------------------------
+
+  try {
+    await loadSlick();
+  } catch (error) {
+    console.error('Failed to load Slick Carousel:', error);
+    return;
+  }
+
+  // -----------------------------
+  // Initialize Slick
+  // -----------------------------
+
+  const $ = window.jQuery;
+
+  $(slidesContainer).slick({
+    slidesToShow: 1,
+    slidesToScroll: 1,
+
+    infinite: true,
+
+    arrows: true,
+
+    prevArrow: prevButton,
+    nextArrow: nextButton,
+
+    dots: false,
+
+    adaptiveHeight: false,
+
+    speed: 500,
+
+    cssEase: 'ease-in-out',
+
+    accessibility: true,
+
+    responsive: [
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+    ],
   });
-
-  // State variables for tracking index position
-  let curSlide = 0;
-  const maxSlide = slides.length - 1;
-
-  // Helper function to update slide positions on click
-  const updateSlides = () => {
-    slides.forEach((slide, indx) => {
-      slide.style.transform = `translateX(${100 * (indx - curSlide)}%)`;
-    });
-  };
-
-  // Event listener for Next Button
-  if (nextSlide) {
-    nextSlide.addEventListener("click", () => {
-      if (curSlide === maxSlide) {
-        curSlide = 0; // Loop back to the first slide
-      } else {
-        curSlide++;
-      }
-      updateSlides();
-    });
-  }
-
-  // Event listener for Prev Button
-  if (prevSlide) {
-    prevSlide.addEventListener("click", () => {
-      if (curSlide === 0) {
-        curSlide = maxSlide; // Loop around to the last slide
-      } else {
-        curSlide--;
-      }
-      updateSlides();
-    });
-  }
 }
